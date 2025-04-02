@@ -27,11 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 
-@Preview(showSystemUi = true, showBackground = true)
+
 @Composable
 
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
     var showDialog by remember { mutableStateOf(false) }
 
     Column(

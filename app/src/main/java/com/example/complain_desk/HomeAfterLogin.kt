@@ -22,9 +22,11 @@ data class ScreenItem(val title: String, val icon: ImageVector)
 @Composable
 fun HomeAfterLogin(navController: NavController) {
 
+
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val selectedItem = remember { mutableStateOf("Home") } // ✅ Correct default selection
+    val selectedItem = remember { mutableStateOf("Home") } 
 
     val drawerItems = listOf(
         ScreenItem("Home", Icons.Default.Home),
@@ -55,7 +57,7 @@ fun HomeAfterLogin(navController: NavController) {
                     drawerItems.forEach { item ->
                         NavigationDrawerItem(
                             label = { Text(text = item.title) },
-                            selected = (item.title == selectedItem.value), // ✅ Corrected
+                            selected = (item.title == selectedItem.value),
                             onClick = {
                                 selectedItem.value = item.title
                                 scope.launch {

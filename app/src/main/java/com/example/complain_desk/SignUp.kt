@@ -1,5 +1,6 @@
 package com.example.complain_desk
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,18 +25,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun SignupScreen(navController: NavController) {
+fun SignupScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -78,7 +85,33 @@ fun SignupScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { /* Handle Signup Logic */ }) {
+        Button(onClick = {
+            if (email.isBlank() || password.isBlank()) {
+                Toast.makeText(context, "All Field are Required", Toast.LENGTH_SHORT).show()
+            }/*else if (password != confirmPassword){
+                Toast.makeText(context,"Password do not Match",Toast.LENGTH_SHORT).show()
+            }*/
+                firebaseAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(
+                                context,
+                                "Account Created Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            navController.navigate("mainDash")
+
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Signup Failed: ${task.exception?.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+        }) {
             Text("Signup")
         }
 
