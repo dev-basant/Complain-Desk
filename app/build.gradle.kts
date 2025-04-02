@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+
 }
 
 android {
@@ -66,4 +67,11 @@ dependencies {
     val nav_version = "2.8.9"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    // ✅ Use only the KTX version which includes everything you need for Kotlin
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+
+    // ✅ Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
 }

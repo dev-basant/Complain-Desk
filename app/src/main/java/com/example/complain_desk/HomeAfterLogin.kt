@@ -2,10 +2,7 @@ package com.example.complain_desk
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 data class ScreenItem(val title: String, val icon: ImageVector)
@@ -21,17 +19,17 @@ data class ScreenItem(val title: String, val icon: ImageVector)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeAfterLogin(navController: NavController) {
-
-
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val selectedItem = remember { mutableStateOf("Home") } 
+    val selectedItem = remember { mutableStateOf("Home") }
+
+    val firebaseAuth = FirebaseAuth.getInstance()
 
     val drawerItems = listOf(
         ScreenItem("Home", Icons.Default.Home),
         ScreenItem("Settings", Icons.Default.Settings),
         ScreenItem("Profile", Icons.Default.Person)
+        // Removed Logout from here
     )
 
     ModalNavigationDrawer(
@@ -60,13 +58,30 @@ fun HomeAfterLogin(navController: NavController) {
                             selected = (item.title == selectedItem.value),
                             onClick = {
                                 selectedItem.value = item.title
-                                scope.launch {
-                                    drawerState.close()
-                                }
+                                scope.launch { drawerState.close() }
                             },
+                            icon = { Icon(item.icon, contentDescription = item.title) },
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
+
+                    Spacer(modifier = Modifier.weight(1f)) // Push Logout to bottom
+
+                    // Logout item at the bottom
+                    NavigationDrawerItem(
+                        label = { Text("Logout") },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            firebaseAuth.signOut()
+                            navController.navigate("login") {
+                                popUpTo("mainDash") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                        icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Logout") },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
             }
         }
@@ -77,9 +92,7 @@ fun HomeAfterLogin(navController: NavController) {
                     title = { Text(text = selectedItem.value) },
                     navigationIcon = {
                         IconButton(onClick = {
-                            scope.launch {
-                                drawerState.open()
-                            }
+                            scope.launch { drawerState.open() }
                         }) {
                             Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
                         }

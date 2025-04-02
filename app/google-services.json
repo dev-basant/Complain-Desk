@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "658774340481",
+    "project_id": "complain-desk-dcd34",
+    "storage_bucket": "complain-desk-dcd34.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:658774340481:android:96ec3d31987d4fa9616e80",
+        "android_client_info": {
+          "package_name": "com.example.complain_desk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "658774340481-69hhgp5tg6tkde82ja762r7p22ccrdu5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.complain_desk",
+            "certificate_hash": "b2eda6170363eff60097b8b6a1ed82b4e03fd98d"
+          }
+        },
+        {
+          "client_id": "658774340481-f5jn3h47d77ie8p01igsvtk6iu580hca.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjVrV8B-VU4U1XlC3A8I-VCTre9thVNQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "658774340481-f5jn3h47d77ie8p01igsvtk6iu580hca.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
