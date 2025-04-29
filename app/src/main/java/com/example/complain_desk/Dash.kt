@@ -27,7 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 
-fun HomeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
+fun homeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
 
 //    var showDialog by remember { mutableStateOf(false) }
 
@@ -64,15 +64,16 @@ fun HomeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
             }
         }
 
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Button(onClick = {}) {
-                Text("Check Status")
-            }
-        }
+//        Column(
+//            verticalArrangement = Arrangement.Center,
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            modifier = Modifier.fillMaxSize()
+//        ) {
+//            Button(onClick = {}) {
+//                Text("Check Status")
+//            }
+//        }
+
     }
 
     // Show the login/signup dialog when showDialog is true
