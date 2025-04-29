@@ -6,8 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.complain_desk.crud.CompaintViewmodel
-import com.example.complain_desk.crud.addComplaintScreen
-import com.example.complain_desk.crud.fetchComplaints
+import com.example.complain_desk.crud.AddComplaintScreen
+import com.example.complain_desk.crud.FetchComplaints
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -17,9 +17,9 @@ fun AppNavHost(navController: NavHostController,firebaseAuth:FirebaseAuth) {
         composable("login") { LoginScreen(navController,firebaseAuth) } // Login screen
         composable("signup") { SignupScreen(navController,firebaseAuth) }
         composable("mainDash") { HomeAfterLogin(navController) }// Signup screen
-        composable("beforeLogin") { homeScreen(navController,firebaseAuth) }
-        composable("addComplaint") { addComplaintScreen(viewmodel = CompaintViewmodel() ,navController) }
-        composable("retriveComplaint") { fetchComplaints(viewmodel = CompaintViewmodel() ,navController) }
+        composable("beforeLogin") { HomeScreen(navController,firebaseAuth) }
+        composable("addComplaint") { AddComplaintScreen(viewmodel = CompaintViewmodel() ,navController) }
+        composable("retriveComplaint") { FetchComplaints(viewmodel = CompaintViewmodel()) }
 
     }
 }

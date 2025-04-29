@@ -70,9 +70,12 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
     // ✅ Use only the KTX version which includes everything you need for Kotlin
-    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.0")
 
     // ✅ Google Sign-In
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+
+    implementation("androidx.compose.material:material-icons-extended")
+
 
 }

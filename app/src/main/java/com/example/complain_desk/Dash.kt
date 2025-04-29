@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,7 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -27,7 +29,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 
-fun homeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
+fun HomeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
 
 //    var showDialog by remember { mutableStateOf(false) }
 
@@ -63,41 +65,29 @@ fun homeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
                 )
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
 
-//        Column(
-//            verticalArrangement = Arrangement.Center,
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            modifier = Modifier.fillMaxSize()
-//        ) {
-//            Button(onClick = {}) {
-//                Text("Check Status")
-//            }
-//        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            DashboardCard("Search Complaint", Icons.Default.Search) {
+                navController.navigate("retriveComplaint")
+                // TODO: Navigate to resolved list
+            }
 
-    }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
 
-    // Show the login/signup dialog when showDialog is true
-//    if (showDialog) {
-//        AlertDialog(
-//            onDismissRequest = { showDialog = false },
-//            title = { Text("Login / Signup") },
-//            text = { Text("Choose an option to continue.") },
-//            confirmButton = {
-//                Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-//                    Button(onClick = { /* Navigate to Login */ showDialog = false }) {
-//                        Text("Login")
-//                    }
-//                    Spacer(modifier = Modifier.width(8.dp))
-//                    Button(onClick = { /* Navigate to Signup */ showDialog = false }) {
-//                        Text("Signup")
-//                    }
-//                }
-//            },
-//            dismissButton = {
-//                Button(onClick = { showDialog = false }) {
-//                    Text("Cancel")
-//                }
-//            }
-//        )
-//    }
-}
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            DashboardCard("Resolved", Icons.Default.CheckCircle) {
+                navController.navigate("retriveComplaint")
+                // TODO: Navigate to resolved list
+            }
+        }
+
+
+    }}
