@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun LoginScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
@@ -27,7 +28,9 @@ fun LoginScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
+
     val context = LocalContext.current
+
 
     Box(
         modifier = Modifier
@@ -93,10 +96,23 @@ fun LoginScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val user = firebaseAuth.currentUser
-                                    if (user != null && user.isEmailVerified) {
-                                        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                                        navController.navigate("mainDash")
-                                    } else {
+                                    if (user != null && user.isEmailVerified ) {
+                                        val userId = firebaseAuth.currentUser?.uid
+                                        val db = FirebaseFirestore.getInstance()
+                                        db.collection("userDetail").document(userId!!).get()
+
+                                            .addOnSuccessListener { document ->
+                                                if (document.exists()) {
+                                                    navController.navigate("mainDash")
+                                                } else {
+                                                    navController.navigate("userDetail")
+                                                }
+                                            }
+                                            .addOnFailureListener { Toast.makeText(context, "Error checking user details", Toast.LENGTH_SHORT).show() }
+                                    }
+
+
+                                    else {
                                         firebaseAuth.signOut()
                                         Toast.makeText(
                                             context,

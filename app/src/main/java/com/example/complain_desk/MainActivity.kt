@@ -19,7 +19,6 @@ class MainActivity : ComponentActivity() {
 
 
         firebaseAuth = FirebaseAuth.getInstance()
-
         enableEdgeToEdge()
         setContent {
 //            Complain_DeskTheme {

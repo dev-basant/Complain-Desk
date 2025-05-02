@@ -27,8 +27,9 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 
-@Composable
 
+
+@Composable
 fun HomeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
 
 //    var showDialog by remember { mutableStateOf(false) }
@@ -72,7 +73,7 @@ fun HomeScreen(navController: NavController,firebaseAuth: FirebaseAuth) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             DashboardCard("Search Complaint", Icons.Default.Search) {
-                navController.navigate("retriveComplaint")
+                navController.navigate("retriveComplaintB")
                 // TODO: Navigate to resolved list
             }
 

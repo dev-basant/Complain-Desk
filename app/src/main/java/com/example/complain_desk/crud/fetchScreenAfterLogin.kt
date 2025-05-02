@@ -17,11 +17,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 
 
 @Composable
-fun FetchComplaints(viewmodel: CompaintViewmodel = viewModel()) {
+fun FetchComplaintsAfter(viewmodel: CompaintViewmodel = viewModel()) {
     var userId by remember { mutableStateOf("") }
     var result by remember { mutableStateOf(listOf<String>()) }
     var isLoading by remember { mutableStateOf(false) }
@@ -45,29 +44,27 @@ fun FetchComplaints(viewmodel: CompaintViewmodel = viewModel()) {
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
-            OutlinedTextField(
-                value = userId,
-                onValueChange = { userId = it },
-                label = { Text("Enter User ID") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = MaterialTheme.shapes.medium,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Gray
-                )
-            )
+//            OutlinedTextField(
+//                value = userId,
+//                onValueChange = { userId = it },
+//                label = { Text("Enter User ID") },
+//                modifier = Modifier.fillMaxWidth(),
+//                singleLine = true,
+//                shape = MaterialTheme.shapes.medium,
+//                colors = OutlinedTextFieldDefaults.colors(
+//                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+//                    unfocusedBorderColor = Color.Gray
+//                )
+//            )
 
             Button(
                 onClick = {
-                    if (userId.isEmpty()) {
-                        Toast.makeText(context, "Please enter User ID", Toast.LENGTH_SHORT).show()
-                    } else {
+
                         isLoading = true
                         viewmodel.getComplaint(userId) { complaints ->
                             isLoading = false
                             result = if (complaints.isNotEmpty()) complaints else listOf("No Complaints Found")
-                        }
+                        
                     }
                 },
                 modifier = Modifier

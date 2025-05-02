@@ -13,18 +13,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun AddComplaintScreen(
     viewmodel: CompaintViewmodel = viewModel(),
     navController: NavController
 ) {
-    var userId by remember { mutableStateOf("") }
+  //  var userId by remember { mutableStateOf("") }
     var issue by remember { mutableStateOf("") }
     var desp by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
     var isSubmitting by remember { mutableStateOf(false) }
 
+    val userId  = FirebaseAuth.getInstance().currentUser?.uid
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,12 +47,12 @@ fun AddComplaintScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            OutlinedTextField(
-                value = userId,
-                onValueChange = { userId = it },
-                label = { Text("User ID") },
-                modifier = Modifier.fillMaxWidth()
-            )
+//            OutlinedTextField(
+//                value = userId,
+//                onValueChange = { userId = it },
+//                label = { Text("User ID") },
+//                modifier = Modifier.fillMaxWidth()
+//            )
 
             OutlinedTextField(
                 value = issue,
@@ -71,15 +73,17 @@ fun AddComplaintScreen(
 
             Button(
                 onClick = {
-                    if (userId.isBlank() || issue.isBlank() || desp.isBlank()) {
+                    if (issue.isBlank() || desp.isBlank()) {
                         result = "Please fill all fields"
                         return@Button
                     }
 
                     isSubmitting = true
-                    viewmodel.addComplaint(userId, issue, desp) {
-                        result = if (it) "Complaint submitted!" else "Failed to submit."
-                        isSubmitting = false
+                    if (userId != null) {
+                        viewmodel.addComplaint(issue, desp) {
+                            result = if (it) "Complaint submitted!" else "Failed to submit."
+                            isSubmitting = false
+                        }
                     }
                 },
                 modifier = Modifier
@@ -89,6 +93,7 @@ fun AddComplaintScreen(
             ) {
                 Text(if (isSubmitting) "Submitting..." else "Submit Complaint")
             }
+
 
             if (result.isNotBlank()) {
                 Text(
@@ -101,7 +106,7 @@ fun AddComplaintScreen(
             Text(
                 text = "Search Complaints ➜",
                 modifier = Modifier
-                    .clickable { navController.navigate("retriveComplaint") }
+                    .clickable { navController.navigate("retriveComplaintA") }
                     .padding(top = 12.dp),
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold

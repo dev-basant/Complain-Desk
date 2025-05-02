@@ -12,12 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.complain_desk.crud.CompaintViewmodel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -116,7 +119,9 @@ fun HomeAfterLogin(navController: NavController) {
             ) {
                 when (selectedItem.value) {
                     "Home" -> HomeScreen(modifier = Modifier.padding(innerPadding),navController)
-                    "Profile" -> ProfileScreen(modifier = Modifier.padding(innerPadding))
+                    "Profile" -> ProfileScreen(modifier = Modifier.padding(innerPadding),firebaseAuth,
+                        viewmodel = CompaintViewmodel()
+                    )
                     "Settings" -> SettingsScreen(modifier = Modifier.padding(innerPadding))
                     "About Us" -> AboutUsScreen()
                 }
@@ -160,7 +165,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             DashboardCard("Search Complaint", Icons.Default.Search) {
-                navController.navigate("retriveComplaint")
+                navController.navigate("retriveComplaintA")
                 // TODO: Navigate to resolved list
             }
 
@@ -173,7 +178,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             DashboardCard("Resolved", Icons.Default.CheckCircle) {
-                navController.navigate("retriveComplaint")
+                navController.navigate("retriveComplaintA")
                 // TODO: Navigate to resolved list
             }
 
@@ -186,13 +191,37 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
-    var userName by remember { mutableStateOf("Basant Kumar") }
-    var userEmail by remember { mutableStateOf("basantsharma762@gmail.com") }
-    var isEditing by remember { mutableStateOf(false) }
+fun ProfileScreen(
+    modifier: Modifier = Modifier,
+    firebaseAuth: FirebaseAuth,
+    viewmodel: CompaintViewmodel
+) {
+    var userName by remember { mutableStateOf("") }
+    var userEmail by remember { mutableStateOf("") }
+    var userAge by remember { mutableStateOf("") }
+    var userLoc by remember { mutableStateOf("") }
+    var userOccup by remember { mutableStateOf("") }
+
     val context = LocalContext.current
+    val userId = firebaseAuth.currentUser?.uid ?: "Not logged in"
+    val clipboardManager = LocalClipboardManager.current
+
+    // Fetch user details once
+    LaunchedEffect(true) {
+        viewmodel.getUserDetails(
+            onSuccess = { data ->
+                userName = data["userName"]?.toString() ?: ""
+                userAge = data["age"]?.toString() ?: ""
+                userLoc = data["location"]?.toString() ?: ""
+                userOccup = data["occupation"]?.toString() ?: ""
+                userEmail = firebaseAuth.currentUser?.email ?: ""
+            },
+            onError = {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
 
     Column(
         modifier = modifier
@@ -201,7 +230,6 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Avatar Icon
         Icon(
             imageVector = Icons.Default.AccountCircle,
             contentDescription = "User Icon",
@@ -213,112 +241,28 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Editable Name Field or Display Text
-        if (isEditing) {
-            OutlinedTextField(
-                value = userName,
-                onValueChange = { userName = it },
-                label = { Text("Full Name") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Gray
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = {
-                    isEditing = false
-                })
-            )
-        } else {
-            Text(
-                text = userName,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+        ProfileTextField("Full Name", userName)
+        ProfileTextField("Email", userEmail)
+        ProfileTextField("Age", userAge)
+        ProfileTextField("Location", userLoc)
+        ProfileTextField("Occupation", userOccup)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(text = "UID:  $userId")
+        Button(onClick = {
+            clipboardManager.setText(AnnotatedString(userId))
+        }) {
+            Text("Copy UID")
         }
+    }
+}
 
-        // Editable Email Field or Display Text
-        if (isEditing) {
-            OutlinedTextField(
-                value = userEmail,
-                onValueChange = { userEmail = it },
-                label = { Text("Email Address") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Gray
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = {
-                    isEditing = false
-                })
-            )
-        } else {
-            Text(
-                text = userEmail,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Settings Option Placeholder (for better UX/UI)
-//        Card(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(8.dp),
-//            elevation = CardDefaults.cardElevation(4.dp)
-//        ) {
-//            Column(
-//                modifier = Modifier
-//                    .padding(16.dp)
-//            ) {
-//                Text("Account Settings", fontWeight = FontWeight.SemiBold)
-//                Spacer(modifier = Modifier.height(8.dp))
-//                Text("Change Password")
-//                Text("Notification Settings")
-//            }
-//        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Edit Profile Button or Save Button based on editing state
-        if (isEditing) {
-            Button(
-                onClick = {
-                    // Save changes logic
-                    if (userName.isEmpty() || userEmail.isEmpty()) {
-                        Toast.makeText(context, "Name and Email cannot be empty", Toast.LENGTH_SHORT).show()
-                    } else {
-                        // Assuming you would save this data to a server or local storage
-                        Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
-                        isEditing = false
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("Save Profile")
-            }
-        } else {
-            Button(
-                onClick = { isEditing = true },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("Edit Profile")
-            }
-        }
-        
+@Composable
+fun ProfileTextField(label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Text(text = label, style = MaterialTheme.typography.labelSmall)
+        Text(text = value, style = MaterialTheme.typography.bodyLarge)
     }
 }
 

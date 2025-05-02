@@ -54,7 +54,8 @@ fun SignupScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                             firebaseAuth.signInWithCredential(credential)
                                 .addOnSuccessListener {
                                     Toast.makeText(context, "Signed up with Google!", Toast.LENGTH_SHORT).show()
-                                    navController.navigate("mainDash")
+
+                                    navController.navigate("userDetail")
                                 }
                                 .addOnFailureListener {
                                     Toast.makeText(context, "Signup failed: ${it.message}", Toast.LENGTH_SHORT).show()
