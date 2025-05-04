@@ -1,17 +1,29 @@
 package com.example.complain_desk
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -20,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.complain_desk.crud.CompaintViewmodel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -86,7 +99,7 @@ fun HomeAfterLogin(navController: NavController) {
                         onClick = {
                             scope.launch { drawerState.close() }
                             firebaseAuth.signOut()
-                            navController.navigate("login") {
+                            navController.navigate("beforeLogin") {
                                 popUpTo("mainDash") { inclusive = true }
                                 launchSingleTop = true
                             }
@@ -191,6 +204,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
@@ -206,6 +220,11 @@ fun ProfileScreen(
     val context = LocalContext.current
     val userId = firebaseAuth.currentUser?.uid ?: "Not logged in"
     val clipboardManager = LocalClipboardManager.current
+
+    var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri -> imageUri = uri }
 
     // Fetch user details once
     LaunchedEffect(true) {
@@ -223,48 +242,94 @@ fun ProfileScreen(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "User Icon",
+        Column(
             modifier = Modifier
-                .size(100.dp)
-                .padding(top = 24.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                modifier = Modifier
+                    .size(140.dp)
+                    .clickable { imagePickerLauncher.launch("image/*") },
+                shape = CircleShape,
+                elevation = CardDefaults.cardElevation(8.dp)
+            ) {
+                if (imageUri != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(imageUri),
+                        contentDescription = "Profile Image",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "User Icon",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Tap image to upload",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(top = 12.dp, bottom = 20.dp)
+            )
 
-        ProfileTextField("Full Name", userName)
-        ProfileTextField("Email", userEmail)
-        ProfileTextField("Age", userAge)
-        ProfileTextField("Location", userLoc)
-        ProfileTextField("Occupation", userOccup)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(6.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "User Information",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
-        Spacer(modifier = Modifier.height(24.dp))
+                    ProfileTextField("Full Name", userName)
+                    ProfileTextField("Email", userEmail)
+                    ProfileTextField("Age", userAge)
+                    ProfileTextField("Location", userLoc)
+                    ProfileTextField("Occupation", userOccup)
+                }
+            }
 
-        Text(text = "UID:  $userId")
-        Button(onClick = {
-            clipboardManager.setText(AnnotatedString(userId))
-        }) {
-            Text("Copy UID")
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(text = "UID: $userId", style = MaterialTheme.typography.labelSmall)
+            Button(
+                onClick = {
+                    clipboardManager.setText(AnnotatedString(userId))
+                    Toast.makeText(context, "UID copied", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text("Copy UID")
+            }
         }
     }
 }
 
 @Composable
 fun ProfileTextField(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Text(text = label, style = MaterialTheme.typography.labelSmall)
-        Text(text = value, style = MaterialTheme.typography.bodyLarge)
+    Column(modifier = Modifier.padding(vertical = 6.dp)) {
+        Text(text = label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+        Text(text = value, style = MaterialTheme.typography.bodyMedium)
     }
 }
+
+
 
 
 @Composable
@@ -416,6 +481,15 @@ fun AboutUsScreen() {
         Text("Passionate about solving real-world problems using mobile technologies.")
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        Text("Name: Gautam Sah")
+        Text("Branch: CSE (Computer Science and Engineering)")
+        Text("College: Indo Global College of Engineering")
+        Text("Role: App Developer, UI/UX Designer")
+        Text("Passionate about solving real-world problems using mobile technologies.")
+
+        Spacer(modifier = Modifier.height(24.dp))
+
 
         Text(
             text = "Version: 1.0.0",

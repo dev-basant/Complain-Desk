@@ -22,14 +22,6 @@
           }
         },
         {
-          "client_id": "658774340481-ht9j0l1eq9cssfqr689fj6ftrrmndqog.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.complain_desk",
-            "certificate_hash": "e7f3a1ef47b381e43ef75eb0e07a8c9c48507955"
-          }
-        },
-        {
           "client_id": "658774340481-f5jn3h47d77ie8p01igsvtk6iu580hca.apps.googleusercontent.com",
           "client_type": 3
         }

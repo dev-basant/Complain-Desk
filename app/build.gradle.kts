@@ -78,4 +78,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
 
 
+    implementation("io.coil-kt:coil-compose:2.4.0") // For image loading
+    implementation("androidx.activity:activity-compose:1.8.0") // For image picker
+
+
+
 }
